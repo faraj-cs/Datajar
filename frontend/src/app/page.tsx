@@ -20,7 +20,8 @@ export default function Home() {
     try {
       const body = new FormData();
       body.append("file", file);
-      const res = await fetch("/api/log", { method: "POST", body });
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${apiBase}/chat/log-analyze`, { method: "POST", body });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Request failed");
       setFlagged(data.flagged || []);
