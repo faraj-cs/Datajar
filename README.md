@@ -1,1 +1,1 @@
-# Datajar
+Detailed README explaination inside each directory
