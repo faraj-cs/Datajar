@@ -25,8 +25,9 @@ export default function Home() {
       if (!res.ok) throw new Error(data?.error || "Request failed");
       setFlagged(data.flagged || []);
       setAnalysis(data.analysis || "");
-    } catch (err: any) {
-      setError(String(err.message || err));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
     } finally {
       setLoading(false);
     }
