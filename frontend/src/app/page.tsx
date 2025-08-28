@@ -1,103 +1,78 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [flagged, setFlagged] = useState<string[]>([]);
+  const [analysis, setAnalysis] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!file) {
+      setError("Please choose a log file.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/log", { method: "POST", body });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Request failed");
+      setFlagged(data.flagged || []);
+      setAnalysis(data.analysis || "");
+    } catch (err: any) {
+      setError(String(err.message || err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen p-8 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-semibold mb-6">Log File Debugger</h1>
+
+      <form onSubmit={onSubmit} className="space-y-4">
+        <input
+          type="file"
+          accept=".log,.txt,.out,.err"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="block text-sm"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 rounded bg-black text-white disabled:opacity-50"
+        >
+          {loading ? "Analyzing…" : "Analyze"}
+        </button>
+      </form>
+
+      {error && (
+        <p className="mt-4 text-red-600 text-sm">{error}</p>
+      )}
+
+      {flagged.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-medium mb-2">Flagged Lines</h2>
+          <pre className="bg-neutral-100 p-3 rounded text-xs overflow-auto max-h-64 whitespace-pre-wrap">
+            {flagged.join("\n")}
+          </pre>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
+
+      {analysis && (
+        <div className="mt-8">
+          <h2 className="font-medium mb-2">Analysis</h2>
+          <div className="prose whitespace-pre-wrap text-sm">
+            {analysis}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
