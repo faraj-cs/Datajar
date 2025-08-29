@@ -91,23 +91,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <header className="border-b border-neutral-200/60">
+      <header className="border-b border-neutral-700/60 bg-neutral-900">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Log File Debugger</h1>
-          <span className="text-xs text-neutral-500">Next.js + FastAPI</span>
+          <span className="text-xs text-neutral-300">Next.js + FastAPI</span>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-8 grid gap-6">
-        <section className="rounded-lg border border-neutral-200/60 bg-white/60 backdrop-blur p-4">
-          <div className="text-sm text-neutral-600 mb-3">Chat</div>
-          <div className="h-72 overflow-auto rounded border border-neutral-200 bg-white p-3 text-sm">
+        <section className="rounded-lg border border-neutral-700/60 bg-neutral-900/60 backdrop-blur p-4">
+          <div className="text-sm text-neutral-300 mb-3">Chat</div>
+          <div className="h-72 overflow-auto rounded border border-neutral-700 bg-neutral-900 p-3 text-sm">
             {messages.length === 0 && (
               <div className="text-neutral-400 text-sm">Start by asking a question or upload a log file.</div>
             )}
             <div className="grid gap-3">
               {messages.map((m, idx) => (
-                <div key={idx} className={m.role === "user" ? "text-neutral-900" : "text-neutral-700"}>
+                <div key={idx} className={m.role === "user" ? "text-neutral-100" : "text-neutral-300"}>
                   <div className="text-[10px] uppercase tracking-wide text-neutral-400 mb-1">{m.role}</div>
                   <div className="whitespace-pre-wrap leading-6">{m.content}</div>
                 </div>
@@ -126,43 +126,43 @@ export default function Home() {
                 }
               }}
               placeholder="Type a message..."
-              className="flex-1 rounded border border-neutral-300 h-10 px-3 text-sm"
+              className="flex-1 rounded border border-neutral-700 bg-neutral-900 text-white placeholder:text-neutral-500 h-10 px-3 text-sm"
             />
             <button
               onClick={() => void sendMessage()}
               disabled={sending || !sessionId}
-              className="rounded bg-neutral-900 text-white text-sm h-10 px-4 disabled:opacity-50"
+              className="rounded bg-neutral-800 text-white text-sm h-10 px-4 disabled:opacity-50"
             >
               {sending ? "Sending…" : "Send"}
             </button>
           </div>
         </section>
 
-        <section className="rounded-lg border border-neutral-200/60 bg-white/60 backdrop-blur p-4">
-          <div className="text-sm text-neutral-600 mb-3">Upload log file</div>
+        <section className="rounded-lg border border-neutral-700/60 bg-neutral-900/60 backdrop-blur p-4">
+          <div className="text-sm text-neutral-300 mb-3">Upload log file</div>
           <div className="grid gap-3">
             <input
               type="file"
               accept=".log,.txt,.out,.err"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-neutral-900 file:text-white hover:file:bg-neutral-800"
+              className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-neutral-800 file:text-white hover:file:bg-neutral-700 text-neutral-200"
             />
             <button
               onClick={() => void uploadAndAnalyze()}
               disabled={uploading || !file}
-              className="inline-flex items-center justify-center rounded-md bg-neutral-900 text-white text-sm h-10 px-4 disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-md bg-neutral-800 text-white text-sm h-10 px-4 disabled:opacity-50"
             >
               {uploading ? "Analyzing…" : "Analyze file"}
             </button>
             {error && (
-              <p className="text-red-600 text-sm">{error}</p>
+              <p className="text-red-400 text-sm">{error}</p>
             )}
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-neutral-200/60">
-        <div className="max-w-4xl mx-auto px-6 py-4 text-xs text-neutral-500">
+      <footer className="border-t border-neutral-700/60 bg-neutral-900">
+        <div className="max-w-4xl mx-auto px-6 py-4 text-xs text-neutral-400">
           Chat and upload logs for quick findings and fixes.
         </div>
       </footer>
